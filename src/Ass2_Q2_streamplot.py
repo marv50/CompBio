@@ -37,24 +37,24 @@ plt.streamplot(X, Y, Fx, Fy, color='gray', density=1.2)
 # Nullclines
 y_null = alpha / beta
 x_null = gamma / delta
-plt.axhline(y=y_null, color='red', linestyle='--', label='dx/dt = 0')
-plt.axvline(x=x_null, color='blue', linestyle='--', label='dy/dt = 0')
+plt.axhline(y=y_null, color='red', linestyle='--', label=r'$\frac{dx}{dt} = 0$')
+plt.axvline(x=x_null, color='blue', linestyle='--', label=r'$\frac{dy}{dt} = 0$')
 plt.axhline(y=0, color='red', linestyle=':', linewidth=1)
 plt.axvline(x=0, color='blue', linestyle=':', linewidth=1)
 
 
 # Equilibria
-plt.plot(0, 0, 'ko', label='Equilibrium at (0,0)')
-plt.plot(x_null, y_null, 'mo', label='Equilibrium at (γ/δ, α/β)')
+plt.plot(0, 0, 'ko', label=r'Equilibrium at $(0,0)$')
+plt.plot(x_null, y_null, 'mo', label=r'Equilibrium at $(γ/δ, α/β)$')
 
 # Labels
-plt.xlabel("x (Metabolite)", fontsize=12)
-plt.ylabel("y (Enzyme)", fontsize=12)
+plt.xlabel(r"$x$ (Metabolite)", fontsize=12)
+plt.ylabel(r"$y$ (Enzyme)", fontsize=12)
 plt.title("Stability Streamplot of Lotka-Volterra Dynamics", fontsize=14)
 plt.xlim(0, 2.5)
 plt.ylim(0, 2.5)
 plt.grid(True)
-plt.legend()
+plt.legend(loc='upper right', fontsize=10)
 plt.tight_layout()
 plt.grid(True, which='both', linestyle=':', linewidth=0.7)
 plt.savefig('streamplot.pdf', dpi=300, bbox_inches='tight')
