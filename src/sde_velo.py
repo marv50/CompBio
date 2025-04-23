@@ -4,11 +4,14 @@ from scipy.integrate import solve_ivp
 
 # === FUNCTIONS ===
 
+
 def hill_function_positive(p, theta, n):
     return p**n / (theta**n + p**n)
 
+
 def hill_function_negative(p, theta, n):
     return theta**n / (theta**n + p**n)
+
 
 def adjust_alpha(alpha, p, theta, n, feedback_type='positive'):
     if feedback_type == 'positive':
@@ -18,6 +21,7 @@ def adjust_alpha(alpha, p, theta, n, feedback_type='positive'):
     else:
         raise ValueError("feedback_type must be 'positive' or 'negative'")
 
+
 def adjust_beta(beta, p, theta, n, feedback_type='positive'):
     if feedback_type == 'positive':
         return beta * hill_function_positive(p, theta, n)
@@ -26,10 +30,12 @@ def adjust_beta(beta, p, theta, n, feedback_type='positive'):
     else:
         raise ValueError("feedback_type must be 'positive' or 'negative'")
 
+
 def general_protein_ode(r, p, k, delta):
     return k * r - delta * p
 
 # === SIMULATION ===
+
 
 def simulate_coupled_system(
     params_a, params_b,
@@ -70,7 +76,8 @@ def simulate_coupled_system(
 
         # --- Gene A ---
         # Protein b promotes splicing of mRNA a (positive feedback on beta_a)
-        beta_a_adj = adjust_beta(beta_a, p_b[i], theta_a, n_a, feedback_type='positive')
+        beta_a_adj = adjust_beta(
+            beta_a, p_b[i], theta_a, n_a, feedback_type='positive')
         alpha_a = c_a / (1 + np.exp(b_a * (t - a_a)))
 
         drift_U_a = alpha_a - beta_a_adj * U_a[i]
@@ -85,7 +92,8 @@ def simulate_coupled_system(
 
         # --- Gene B ---
         # Protein a inhibits splicing of mRNA b (negative feedback on beta_b)
-        beta_b_adj = adjust_beta(beta_b, p_a[i], theta_b, n_b, feedback_type='negative')
+        beta_b_adj = adjust_beta(
+            beta_b, p_a[i], theta_b, n_b, feedback_type='negative')
         alpha_b = c_b / (1 + np.exp(b_b * (t - a_b)))
 
         drift_U_b = alpha_b - beta_b_adj * U_b[i]
@@ -156,10 +164,12 @@ plt.figure(figsize=(14, 8))
 # Plot for Unspliced RNAs
 plt.subplot(2, 1, 1)
 plt.plot(time, U_a_mean, label="Unspliced RNA A (mean)", color="blue")
-plt.fill_between(time, U_a_mean - U_a_std, U_a_mean + U_a_std, color="blue", alpha=0.3)
+plt.fill_between(time, U_a_mean - U_a_std, U_a_mean +
+                 U_a_std, color="blue", alpha=0.3)
 
 plt.plot(time, U_b_mean, label="Unspliced RNA B (mean)", color="green")
-plt.fill_between(time, U_b_mean - U_b_std, U_b_mean + U_b_std, color="green", alpha=0.3)
+plt.fill_between(time, U_b_mean - U_b_std, U_b_mean +
+                 U_b_std, color="green", alpha=0.3)
 
 plt.title("Unspliced RNA Dynamics)", fontsize=17)
 plt.xlabel("Time", fontsize=14)
@@ -172,10 +182,12 @@ plt.grid(True)
 # Plot for Spliced RNAs
 plt.subplot(2, 1, 2)
 plt.plot(time, S_a_mean, label="Spliced RNA A (mean)", color="orange")
-plt.fill_between(time, S_a_mean - S_a_std, S_a_mean + S_a_std, color="orange", alpha=0.3)
+plt.fill_between(time, S_a_mean - S_a_std, S_a_mean +
+                 S_a_std, color="orange", alpha=0.3)
 
 plt.plot(time, S_b_mean, label="Spliced RNA B (mean)", color="red")
-plt.fill_between(time, S_b_mean - S_b_std, S_b_mean + S_b_std, color="red", alpha=0.3)
+plt.fill_between(time, S_b_mean - S_b_std, S_b_mean +
+                 S_b_std, color="red", alpha=0.3)
 
 plt.title("Spliced RNA Dynamics", fontsize=17)
 plt.xlabel("Time", fontsize=14)
@@ -190,4 +202,17 @@ plt.subplots_adjust(hspace=0.4)
 plt.savefig("fig/sde_dynamics.pdf")
 plt.show()
 
+# === PHASE PLANE PLOT ===
 
+plt.figure(figsize=(8, 6))
+plt.plot(p_a, p_b, color="purple", lw=2)
+plt.xlabel("Protein A Concentration", fontsize=14)
+plt.ylabel("Protein B Concentration", fontsize=14)
+plt.title("Phase Plane: Protein A vs Protein B", fontsize=17)
+plt.grid(True)
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+
+plt.tight_layout()
+plt.savefig("fig/phase_plane_proteins.pdf")
+plt.show()
