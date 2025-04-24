@@ -13,7 +13,7 @@ def hill_function_negative(p, theta, n):
     return theta**n / (theta**n + p**n)
 
 
-def adjust_alpha(alpha, p, theta, n, feedback_type='positive'):
+def adjust_alpha(alpha, p, theta, n, feedback_type):
     if feedback_type == 'positive':
         return alpha * hill_function_positive(p, theta, n)
     elif feedback_type == 'negative':
@@ -22,7 +22,7 @@ def adjust_alpha(alpha, p, theta, n, feedback_type='positive'):
         raise ValueError("feedback_type must be 'positive' or 'negative'")
 
 
-def adjust_beta(beta, p, theta, n, feedback_type='positive'):
+def adjust_beta(beta, p, theta, n, feedback_type):
     if feedback_type == 'positive':
         return beta * hill_function_positive(p, theta, n)
     elif feedback_type == 'negative':
@@ -77,7 +77,7 @@ def simulate_coupled_system(
         # --- Gene A ---
         # Protein b promotes splicing of mRNA a (positive feedback on beta_a)
         beta_a_adj = adjust_beta(
-            beta_a, p_b[i], theta_a, n_a, feedback_type='positive')
+            beta_a, p_b[i], theta_a, n_a, 'positive')
         alpha_a = c_a / (1 + np.exp(b_a * (t - a_a)))
 
         drift_U_a = alpha_a - beta_a_adj * U_a[i]
@@ -93,7 +93,7 @@ def simulate_coupled_system(
         # --- Gene B ---
         # Protein a inhibits splicing of mRNA b (negative feedback on beta_b)
         beta_b_adj = adjust_beta(
-            beta_b, p_a[i], theta_b, n_b, feedback_type='negative')
+            beta_b, p_a[i], theta_b, n_b, 'negative')
         alpha_b = c_b / (1 + np.exp(b_b * (t - a_b)))
 
         drift_U_b = alpha_b - beta_b_adj * U_b[i]
@@ -113,13 +113,13 @@ def simulate_coupled_system(
 
 if __name__ == "__main__":
 
-    params_a = (1.0, 0.0005, 2.0, 2.35, 1.0, 0.05, 0.05,
+    params_a = (2.0, 1.0, 0.0005, 2.35, 1.0, 0.05, 0.05,
                 0.8, 0.8, 0.8, 3.0, 0.21, 1.0, 1.0)
 
-    params_b = (0.25, 0.0005, 0.5, 2.35, 1.0, 0.05, 0.05,
+    params_b = (0.5, 0.25, 0.0005, 2.35, 1.0, 0.05, 0.05,
                 0.8, 0.8, 0.8, 3.0, 0.21, 1.0, 1.0)
 
-    T = 10
+    T = 150
     dt = 0.01
     n_simulations = 50
 
@@ -216,3 +216,4 @@ plt.yticks(fontsize=12)
 plt.tight_layout()
 plt.savefig("fig/phase_plane_proteins.pdf")
 plt.show()
+

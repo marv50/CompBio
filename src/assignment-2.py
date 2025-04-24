@@ -45,7 +45,7 @@ params = {
 # Initial conditions and time span
 y0 = [0.8, 0.8, 0.8, 0.8]
 t_span = [0, 100]
-t_eval = np.linspace(t_span[0], t_span[1], 50y)
+t_eval = np.linspace(t_span[0], t_span[1], 50)
 
 # Solve the ODE system
 sol = solve_ivp(lambda t, x: ode_sys(t, x, params), t_span, y0, t_eval=t_eval)
