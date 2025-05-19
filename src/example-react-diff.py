@@ -24,6 +24,8 @@ kcw = 0.05
 K_IA = 1.0
 theta_a = 0.02
 theta_i = 0.02
+Y = 0.5
+Mcw = 1.0
 
 # -----------------------------
 # 3. Define Variables
@@ -81,9 +83,9 @@ for step in range(steps):
     eq_A.solve(dt=time_step)
     eq_I.solve(dt=time_step)
 
-    if step % plot_interval == 0:
-        print(f"Step {step}")
-        plot_rgb()
+
+    print(f"Step {step}")
+    plot_rgb()
 
 plt.ioff()
 plot_rgb()
