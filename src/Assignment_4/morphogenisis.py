@@ -18,11 +18,11 @@ def get_config():
         "plot_interval": 1,
 
         # Reaction-diffusion pattern settings
-        "Da": 0.5,   # Very slow activator diffusion
-        "Di": 0.5,      # Much faster inhibitor diffusion
-        "mu_max": 0.08,  # Lower activation rate for stability
-        "kcw": 0.01,    # Inhibitor decay
-        "K_IA": 0.3,    # Strong inhibition effect on activator
+        "Da": 0.5,   
+        "Di": 0.5,      
+        "mu_max": 0.08,  
+        "kcw": 0.01,    
+        "K_IA": 0.3,    
         "theta_a": 0.02,
         "theta_i": 0.01,
         "Y": 0.5,
@@ -54,12 +54,7 @@ def initialize_variables(mesh, config):
     # Create an activator well around the center
     A_array = A.value.copy().reshape((nx, ny))
     cx, cy = nx // 2, ny // 2
-    radius = 3  # Radius of well
-
-    for i in range(nx):
-        for j in range(ny):
-            if np.sqrt((i - cx)**2 + (j - cy)**2) <= radius:
-                A_array[i, j] += 0.1  # Boost activator here
+    A_array[cx, cy] += 0.1
 
     A.setValue(A_array.flatten())
 
@@ -133,7 +128,7 @@ def cell_growth(cell_grid, mass_grid, A_conc, I_conc, config):
                     (A_conc[i, j] / (config["theta_a"] + A_conc[i, j]))
                 mass_grid[i, j] += growth
                 # Cells consume activator for growth
-                A_conc[i, j] -= growth
+                A_conc[i, j] -= config["kcw"] * A_conc[i, j]
 
     return A_conc
 
