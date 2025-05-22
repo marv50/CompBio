@@ -15,10 +15,10 @@ def get_config():
         "dy": 1.0,
         "time_step": 0.01,
         "steps": 1000,
-        "plot_interval": 50,
+        "plot_interval": 1,
 
         # Reaction-diffusion pattern settings
-        "Da": 0.0005,   # Very slow activator diffusion
+        "Da": 0.5,   # Very slow activator diffusion
         "Di": 0.5,      # Much faster inhibitor diffusion
         "mu_max": 0.08,  # Lower activation rate for stability
         "kcw": 0.01,    # Inhibitor decay
@@ -46,7 +46,7 @@ def create_mesh(config):
 def initialize_variables(mesh, config):
     nx, ny = config["nx"], config["ny"]
     A = CellVariable(name="Activator A", mesh=mesh, value=0.2)
-    I = CellVariable(name="Inhibitor I", mesh=mesh, value=0.01)
+    I = CellVariable(name="Inhibitor I", mesh=mesh, value=0.2)
 
     A.setValue(A.value + 0.02 * np.random.random(len(A)))
     I.setValue(I.value + 0.02 * np.random.random(len(I)))
