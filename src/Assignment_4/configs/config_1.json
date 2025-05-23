@@ -1,22 +1,21 @@
 {
-  "N": 200,
-  "Du": 0.16,
-  "Dv": 0.08,
-  "f": 0.06,
-  "k": 0.060,
-  "dt": 1.0,
-  "total_steps": 8000,
-  "save_interval": 50,
-  "bc_type": "dirichlet",
-  "mu_max": 0.02,
-  "Mcw": 1.0,
-  "theta_a": 0.05,
-  "kcw": 0.01,
-  "init_mass": 1.0,
-  "max_mass": 2.0,
-  "cell_colors": {
-    "empty": [1.0, 1.0, 1.0],
-    "transitional": [0.4, 0.8, 1.0],
-    "brown": [0.5, 0.3, 0.1]
-  }
+    "N": 200,
+    "Du": 0.16,
+    "Dv": 0.08,
+    "f": 0.055,
+    "k": 0.062,
+    "dt": 1.0,
+    "total_steps": 5000,
+    "save_interval": 50,
+    "bc_type": "dirichlet",
+    "mu_max": 0.02,
+    "Mcw": 1.0,
+    "theta_a": 0.1,
+    "kcw": 0.0005,
+    "init_mass": 1.0,
+    "max_mass": 2.0,
+    "cell_colors": {
+        "empty": [255, 255, 255],
+        "transitional": [151, 100, 49],
+        "brown": [245, 223, 201]}
 }
