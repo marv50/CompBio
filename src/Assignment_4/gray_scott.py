@@ -6,6 +6,20 @@ import time
 import json
 import os
 
+# Set global font sizes for LaTeX compatibility
+plt.rcParams.update({
+    'font.size': 14,           # Base font size
+    'axes.titlesize': 16,      # Title font size
+    'axes.labelsize': 14,      # Axis label font size
+    'xtick.labelsize': 12,     # X-axis tick label size
+    'ytick.labelsize': 12,     # Y-axis tick label size
+    'legend.fontsize': 12,     # Legend font size
+    'figure.titlesize': 18,    # Figure title size
+    'axes.linewidth': 1.2,     # Axis line width
+    'grid.linewidth': 0.8,     # Grid line width
+    'lines.linewidth': 2.0,    # Default line width
+})
+
 
 def load_config(path):
     with open(path, 'r') as f:
@@ -261,77 +275,80 @@ def run_full_simulation(params):
 
 def show_animation(saved_a, saved_i, saved_cells, saved_times, save_dir, save_plots=False):
     print("\nPreparing animation...")
-    
+
     # Get filename once if saving plots
     base_filename = None
     if save_plots:
-        base_filename = input("Enter a base filename (without extension) for your plots: ").strip()
+        base_filename = input(
+            "Enter a base filename (without extension) for your plots: ").strip()
         if not base_filename:
             print("No filename provided. Skipping plot saving.")
             save_plots = False
         else:
-            save_all(saved_a, saved_cells, saved_times, save_dir, base_filename)
+            save_all(saved_a, saved_i, saved_cells,
+                     saved_times, save_dir, base_filename)
             print(f"Plots saved to '{save_dir}'")
 
     # Create figure with improved formatting
     fig = plt.figure(figsize=(20, 7))
     gs = fig.add_gridspec(1, 3, hspace=0.3, wspace=0.3)
-    
+
     ax1 = fig.add_subplot(gs[0, 0])
     ax2 = fig.add_subplot(gs[0, 1])
     ax3 = fig.add_subplot(gs[0, 2])
 
-    # Inhibitor plot with better formatting
+    # Inhibitor plot
     im1 = ax1.imshow(saved_i[0], cmap='inferno', interpolation='bilinear',
                      vmin=saved_i.min(), vmax=saved_i.max())
-    ax1.set_title("Inhibitor Concentration (i)", fontsize=14, fontweight='bold', pad=20)
-    ax1.set_xlabel("X Position", fontsize=12)
-    ax1.set_ylabel("Y Position", fontsize=12)
+    ax1.set_title("Inhibitor Concentration (i)", pad=20)
+    ax1.set_xlabel("X Position")
+    ax1.set_ylabel("Y Position")
     cbar1 = plt.colorbar(im1, ax=ax1, shrink=0.8)
-    cbar1.set_label("Concentration", fontsize=11)
+    cbar1.set_label("Concentration")
 
-    # Cell states plot with better formatting
-    im2 = ax2.imshow(get_cell_rgb(saved_cells[0], simulation_config["cell_colors"]), interpolation='nearest')
-    ax2.set_title("Cell States", fontsize=14, fontweight='bold', pad=20)
-    ax2.set_xlabel("X Position", fontsize=12)
-    ax2.set_ylabel("Y Position", fontsize=12)
+    # Cell states plot
+    im2 = ax2.imshow(get_cell_rgb(
+        saved_cells[0], simulation_config["cell_colors"]), interpolation='nearest')
+    ax2.set_title("Cell States", pad=20)
+    ax2.set_xlabel("X Position")
+    ax2.set_ylabel("Y Position")
 
-    # Activator plot with better formatting
+    # Activator plot
     im3 = ax3.imshow(saved_a[0], cmap='viridis', interpolation='bilinear',
                      vmin=saved_a.min(), vmax=saved_a.max())
-    ax3.set_title("Activator Concentration (a)", fontsize=14, fontweight='bold', pad=20)
-    ax3.set_xlabel("X Position", fontsize=12)
-    ax3.set_ylabel("Y Position", fontsize=12)
+    ax3.set_title("Activator Concentration (a)", pad=20)
+    ax3.set_xlabel("X Position")
+    ax3.set_ylabel("Y Position")
     cbar3 = plt.colorbar(im3, ax=ax3, shrink=0.8)
-    cbar3.set_label("Concentration", fontsize=11)
+    cbar3.set_label("Concentration")
 
-    # Improved legend for cell states
+    # Legend for cell states
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor=np.array(simulation_config["cell_colors"]["empty"])/255.0, 
+        Patch(facecolor=np.array(simulation_config["cell_colors"]["empty"])/255.0,
               edgecolor='black', label='Empty', linewidth=1),
-        Patch(facecolor=np.array(simulation_config["cell_colors"]["transitional"])/255.0, 
+        Patch(facecolor=np.array(simulation_config["cell_colors"]["transitional"])/255.0,
               edgecolor='black', label='Transitional', linewidth=1),
-        Patch(facecolor=np.array(simulation_config["cell_colors"]["brown"])/255.0, 
+        Patch(facecolor=np.array(simulation_config["cell_colors"]["brown"])/255.0,
               edgecolor='black', label='Differentiated', linewidth=1)
     ]
     ax2.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.0, 1.0),
-               frameon=True, fancybox=True, shadow=True, fontsize=10)
+               frameon=True, fancybox=True, shadow=True)
 
-    # Add grid and improve aesthetics
+    # Set equal aspect ratio
     for ax in [ax1, ax2, ax3]:
-        ax.tick_params(labelsize=10)
         ax.set_aspect('equal')
 
     def update(frame):
         im1.set_array(saved_i[frame])
-        im2.set_array(get_cell_rgb(saved_cells[frame], simulation_config["cell_colors"]))
+        im2.set_array(get_cell_rgb(
+            saved_cells[frame], simulation_config["cell_colors"]))
         im3.set_array(saved_a[frame])
 
         step = int(saved_times[frame])
-        ax1.set_title(f"Inhibitor (i) - Step: {step}", fontsize=14, fontweight='bold', pad=20)
-        ax2.set_title(f"Cell States - Step: {step}", fontsize=14, fontweight='bold', pad=20)
-        ax3.set_title(f"Activator (a) - Step: {step}", fontsize=14, fontweight='bold', pad=20)
+        ax1.set_title(f"Inhibitor (i) - Step: {step}", pad=20)
+        ax2.set_title(f"Cell States - Step: {step}", pad=20)
+        ax3.set_title(f"Activator (a) - Step: {step}", pad=20)
 
         return [im1, im2, im3]
 
@@ -343,7 +360,8 @@ def show_animation(saved_a, saved_i, saved_cells, saved_times, save_dir, save_pl
     if save_plots and base_filename:
         # Try to save as MP4 first, fallback to GIF if ffmpeg not available
         try:
-            animation_path = os.path.join(save_dir, f"animation_{base_filename}.mp4")
+            animation_path = os.path.join(
+                save_dir, f"animation_{base_filename}.mp4")
             print(f"Saving animation as MP4 to {animation_path}...")
             ani.save(animation_path, writer='ffmpeg', fps=10, bitrate=1800)
             print(f"Animation saved as {animation_path}")
@@ -351,63 +369,64 @@ def show_animation(saved_a, saved_i, saved_cells, saved_times, save_dir, save_pl
             print(f"Failed to save as MP4: {e}")
             print("Trying to save as GIF instead...")
             try:
-                animation_path = os.path.join(save_dir, f"animation_{base_filename}.gif")
+                animation_path = os.path.join(
+                    save_dir, f"animation_{base_filename}.gif")
                 ani.save(animation_path, writer='pillow', fps=5)
                 print(f"Animation saved as GIF: {animation_path}")
             except Exception as e2:
                 print(f"Failed to save animation: {e2}")
-                print("Animation saving failed. Please check if ffmpeg or pillow is properly installed.")
+                print(
+                    "Animation saving failed. Please check if ffmpeg or pillow is properly installed.")
 
     plt.show()
     return ani
 
 
-def plot_total_activator_over_time(saved_a, saved_times):
-    """Plot total activator over time."""
+def plot_total_activator_inhibitor_over_time(saved_a, saved_i, saved_times):
+    """Plot total activator and inhibitor over time."""
     total_a = np.sum(saved_a, axis=(1, 2))  # Sum across spatial dimensions
-    
+    total_i = np.sum(saved_i, axis=(1, 2))  # Sum across spatial dimensions
+
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(saved_times, total_a, 'g-', linewidth=2.5, label='Total Activator')
-    ax.set_xlabel("Time Step", fontsize=12, fontweight='bold')
-    ax.set_ylabel("Total Activator (a)", fontsize=12, fontweight='bold')
-    ax.set_title("Total Activator Over Time", fontsize=14, fontweight='bold', pad=20)
+    ax.plot(saved_times, total_a, 'g-', linewidth=2.5,
+            label='Total Activator (a)', marker='-', markersize=4)
+    ax.plot(saved_times, total_i, 'r-', linewidth=2.5,
+            label='Total Inhibitor (i)', marker='-', markersize=4)
+    ax.set_xlabel("Time Step")
+    ax.set_ylabel("Total Concentration")
+    ax.set_title("Total Activator and Inhibitor Over Time", pad=20)
     ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=11)
-    ax.tick_params(labelsize=10)
+    ax.legend()
     plt.tight_layout()
     return fig
 
 
 def plot_phase_diagram_differentiated_vs_undifferentiated(saved_cells):
-    """Create a simple phase diagram showing differentiated versus undifferentiated cells over time."""
-    # Undifferentiated cells: Empty + Transitional
-    undifferentiated_cells = np.sum((saved_cells == EMPTY_CELL) | (saved_cells == TRANS_CELL), axis=(1, 2))
+    """Create a phase diagram showing differentiated versus undifferentiated cells over time.
+    Only considers transitional cells as undifferentiated, excluding empty cells."""
+
+    # Undifferentiated cells: Only transitional cells (excluding empty)
+    undifferentiated_cells = np.sum(saved_cells == TRANS_CELL, axis=(1, 2))
     # Differentiated cells: Brown cells
     differentiated_cells = np.sum(saved_cells == BROWN_CELL, axis=(1, 2))
-    
+
     fig, ax = plt.subplots(figsize=(10, 8))
-    scatter = ax.scatter(undifferentiated_cells, differentiated_cells, 
-                        c=range(len(undifferentiated_cells)), cmap='plasma', 
-                        s=50, alpha=0.7, edgecolors='black', linewidth=0.5)
-    
+
+    # Create scatter plot with time progression
+    scatter = ax.scatter(undifferentiated_cells, differentiated_cells,
+                         c=range(len(undifferentiated_cells)), cmap='plasma',
+                         s=80, alpha=0.7, edgecolors='black', linewidth=0.8)
+
     # Add colorbar to show time progression
     cbar = plt.colorbar(scatter, ax=ax)
-    cbar.set_label("Time Step", fontsize=11, fontweight='bold')
-    
-    ax.set_xlabel("Undifferentiated Cells (Empty + Transitional)", fontsize=12, fontweight='bold')
-    ax.set_ylabel("Differentiated Cells (Brown)", fontsize=12, fontweight='bold')
-    ax.set_title("Phase Diagram: Differentiated vs Undifferentiated Cells", fontsize=14, fontweight='bold', pad=20)
+    cbar.set_label("Time Step")
+
+    ax.set_xlabel("Undifferentiated Cells")
+    ax.set_ylabel("Differentiated Cells")
+    ax.set_title(
+        "Phase Diagram: Differentiated vs Undifferentiated Cells", pad=20)
     ax.grid(True, alpha=0.3)
-    ax.tick_params(labelsize=10)
-    
-    # Add arrows to show time direction
-    if len(undifferentiated_cells) > 1:
-        for i in range(0, len(undifferentiated_cells)-1, max(1, len(undifferentiated_cells)//8)):
-            if i+1 < len(undifferentiated_cells):
-                ax.annotate('', xy=(undifferentiated_cells[i+1], differentiated_cells[i+1]), 
-                           xytext=(undifferentiated_cells[i], differentiated_cells[i]),
-                           arrowprops=dict(arrowstyle='->', color='red', alpha=0.8, lw=1.5))
-    
+
     plt.tight_layout()
     return fig
 
@@ -418,16 +437,15 @@ def plot_cell_counts_over_time(saved_cells, saved_times):
     brown_counts = np.sum(saved_cells == BROWN_CELL, axis=(1, 2))
 
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(saved_times, trans_counts, label='Transitional Cells', 
-            color='dodgerblue', linewidth=2.5, marker='o', markersize=4)
-    ax.plot(saved_times, brown_counts, label='Differentiated Cells', 
-            color='saddlebrown', linewidth=2.5, marker='s', markersize=4)
-    ax.set_xlabel("Time Step", fontsize=12, fontweight='bold')
-    ax.set_ylabel("Cell Count", fontsize=12, fontweight='bold')
-    ax.set_title("Cell States Over Time", fontsize=14, fontweight='bold', pad=20)
-    ax.legend(fontsize=11)
+    ax.plot(saved_times, trans_counts, label='Undifferentiated Cells',
+            color='dodgerblue', linewidth=2.5, marker='-', markersize=5)
+    ax.plot(saved_times, brown_counts, label='Differentiated Cells',
+            color='saddlebrown', linewidth=2.5, marker='-', markersize=5)
+    ax.set_xlabel("Time Step")
+    ax.set_ylabel("Cell Count")
+    ax.set_title("Cell States Over Time", pad=20)
+    ax.legend()
     ax.grid(True, alpha=0.3)
-    ax.tick_params(labelsize=10)
     plt.tight_layout()
     return fig
 
@@ -437,53 +455,58 @@ def plot_time_progression_snapshots(saved_a, saved_i, saved_cells, saved_times):
     # Select 3 time points evenly distributed
     n_snapshots = 3
     indices = np.linspace(0, len(saved_times)-1, n_snapshots, dtype=int)
-    
+
     fig, axes = plt.subplots(3, n_snapshots, figsize=(4*n_snapshots, 12))
-    
+
     for i, idx in enumerate(indices):
         # Inhibitor
-        im1 = axes[0, i].imshow(saved_i[idx], cmap='inferno', interpolation='bilinear')
-        axes[0, i].set_title(f'Inhibitor - Step {int(saved_times[idx])}', fontsize=12, fontweight='bold')
-        axes[0, i].set_xlabel('X', fontsize=10)
-        axes[0, i].set_ylabel('Y', fontsize=10)
-        axes[0, i].tick_params(labelsize=8)
-        
+        im1 = axes[0, i].imshow(
+            saved_i[idx], cmap='inferno', interpolation='bilinear')
+        axes[0, i].set_title(f'Inhibitor - Step {int(saved_times[idx])}')
+        axes[0, i].set_xlabel('X')
+        axes[0, i].set_ylabel('Y')
+
         # Cell states
-        axes[1, i].imshow(get_cell_rgb(saved_cells[idx], simulation_config["cell_colors"]), interpolation='nearest')
-        axes[1, i].set_title(f'Cells - Step {int(saved_times[idx])}', fontsize=12, fontweight='bold')
-        axes[1, i].set_xlabel('X', fontsize=10)
-        axes[1, i].set_ylabel('Y', fontsize=10)
-        axes[1, i].tick_params(labelsize=8)
-        
+        axes[1, i].imshow(get_cell_rgb(
+            saved_cells[idx], simulation_config["cell_colors"]), interpolation='nearest')
+        axes[1, i].set_title(f'Cells - Step {int(saved_times[idx])}')
+        axes[1, i].set_xlabel('X')
+        axes[1, i].set_ylabel('Y')
+
         # Activator
-        im3 = axes[2, i].imshow(saved_a[idx], cmap='viridis', interpolation='bilinear')
-        axes[2, i].set_title(f'Activator - Step {int(saved_times[idx])}', fontsize=12, fontweight='bold')
-        axes[2, i].set_xlabel('X', fontsize=10)
-        axes[2, i].set_ylabel('Y', fontsize=10)
-        axes[2, i].tick_params(labelsize=8)
-        
+        im3 = axes[2, i].imshow(
+            saved_a[idx], cmap='viridis', interpolation='bilinear')
+        axes[2, i].set_title(f'Activator - Step {int(saved_times[idx])}')
+        axes[2, i].set_xlabel('X')
+        axes[2, i].set_ylabel('Y')
+
         # Set equal aspect ratio for all subplots
         for j in range(3):
             axes[j, i].set_aspect('equal')
-    
+
     # Add colorbars for the first and last columns
-    plt.colorbar(axes[0, 0].images[0], ax=axes[0, 0], shrink=0.6, label='Inhibitor')
-    plt.colorbar(axes[2, 0].images[0], ax=axes[2, 0], shrink=0.6, label='Activator')
-    
-    plt.suptitle('Simulation Time Progression', fontsize=16, fontweight='bold', y=0.98)
+    plt.colorbar(axes[0, 0].images[0], ax=axes[0, 0],
+                 shrink=0.6, label='Inhibitor')
+    plt.colorbar(axes[2, 0].images[0], ax=axes[2, 0],
+                 shrink=0.6, label='Activator')
+
+    plt.suptitle('Simulation Time Progression')
     plt.tight_layout()
     return fig
 
 
-def save_all(saved_a, saved_cells, saved_times, save_dir, base_filename):
+def save_all(saved_a, saved_i, saved_cells, saved_times, save_dir, base_filename):
     """Save all analysis plots to the specified directory with a base name and plot-specific suffixes as PDFs."""
     os.makedirs(save_dir, exist_ok=True)
 
     plot_info = [
-        (plot_total_activator_over_time(saved_a, saved_times), "total_activator_plot"),
-        (plot_phase_diagram_differentiated_vs_undifferentiated(saved_cells), "phase_differentiated_plot"),
+        (plot_total_activator_inhibitor_over_time(
+            saved_a, saved_i, saved_times), "total_concentrations_plot"),
+        (plot_phase_diagram_differentiated_vs_undifferentiated(
+            saved_cells), "phase_differentiated_plot"),
         (plot_cell_counts_over_time(saved_cells, saved_times), "cell_count_plot"),
-        (plot_time_progression_snapshots(saved_a, saved_i, saved_cells, saved_times), "time_progression_plot")
+        (plot_time_progression_snapshots(saved_a, saved_i,
+         saved_cells, saved_times), "time_progression_plot")
     ]
 
     for fig, plot_suffix in plot_info:
@@ -497,7 +520,7 @@ def save_all(saved_a, saved_cells, saved_times, save_dir, base_filename):
 # Main execution
 if __name__ == "__main__":
     # Load config
-    config_path = "src/Assignment_4/configs/deer.json"
+    config_path = "src/Assignment_4/configs/deer_2.json"
     simulation_config = load_config(config_path)
 
     # Constants for cell states
@@ -506,10 +529,11 @@ if __name__ == "__main__":
     BROWN_CELL = 2
 
     # Run simulation
-    saved_a, saved_i, saved_cells, saved_times = run_full_simulation(simulation_config)
+    saved_a, saved_i, saved_cells, saved_times = run_full_simulation(
+        simulation_config)
 
     save_dir = r"src\Assignment_4\fig"
 
     # Show animation and optionally save plots
     animation = show_animation(saved_a, saved_i, saved_cells, saved_times, save_dir,
-                               save_plots=False)
+                               save_plots=True)
