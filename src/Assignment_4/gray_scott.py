@@ -392,7 +392,7 @@ def save_all(saved_a, saved_cells, saved_times, save_dir):
 # Main execution
 if __name__ == "__main__":
     # Load config
-    config_path = "src/Assignment_4/configs/config_2.json"
+    config_path = "src/Assignment_4/configs/deer.json"
     simulation_config = load_config(config_path)
 
     # Constants for cell states
