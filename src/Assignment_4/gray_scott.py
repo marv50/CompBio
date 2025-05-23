@@ -389,9 +389,9 @@ def plot_total_activator_inhibitor_over_time(saved_a, saved_i, saved_times):
 
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(saved_times, total_a, 'g-', linewidth=2.5,
-            label='Total Activator (a)', marker='-', markersize=4)
+            label='Total Activator (a)')
     ax.plot(saved_times, total_i, 'r-', linewidth=2.5,
-            label='Total Inhibitor (i)', marker='-', markersize=4)
+            label='Total Inhibitor (i)')
     ax.set_xlabel("Time Step")
     ax.set_ylabel("Total Concentration")
     ax.set_title("Total Activator and Inhibitor Over Time", pad=20)
@@ -438,9 +438,9 @@ def plot_cell_counts_over_time(saved_cells, saved_times):
 
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(saved_times, trans_counts, label='Undifferentiated Cells',
-            color='dodgerblue', linewidth=2.5, marker='-', markersize=5)
+            color='dodgerblue', linewidth=2.5)
     ax.plot(saved_times, brown_counts, label='Differentiated Cells',
-            color='saddlebrown', linewidth=2.5, marker='-', markersize=5)
+            color='saddlebrown', linewidth=2.5)
     ax.set_xlabel("Time Step")
     ax.set_ylabel("Cell Count")
     ax.set_title("Cell States Over Time", pad=20)
@@ -520,7 +520,7 @@ def save_all(saved_a, saved_i, saved_cells, saved_times, save_dir, base_filename
 # Main execution
 if __name__ == "__main__":
     # Load config
-    config_path = "src/Assignment_4/configs/deer_2.json"
+    config_path = "src/Assignment_4/configs/deer.json"
     simulation_config = load_config(config_path)
 
     # Constants for cell states
