@@ -536,4 +536,4 @@ if __name__ == "__main__":
 
     # Show animation and optionally save plots
     animation = show_animation(saved_a, saved_i, saved_cells, saved_times, save_dir,
-                               save_plots=True)
+                               save_plots=False)
