@@ -260,47 +260,44 @@ def run_full_simulation(params):
 
 
 def show_animation(saved_a, saved_i, saved_cells, saved_times, save_dir, save_plots=False):
-    """Display the animation using saved simulation data"""
     print("\nPreparing animation...")
     if save_plots:
         save_all(saved_a, saved_cells, saved_times, save_dir)
         print(f"Plots saved to '{save_dir}'")
 
-    # Setup figure and axes
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6), tight_layout=True)
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6), tight_layout=True)
 
-    # Initial plots
     im1 = ax1.imshow(saved_i[0], cmap='inferno', interpolation='bilinear',
                      vmin=saved_i.min(), vmax=saved_i.max())
     ax1.set_title("Inhibitor Concentration (i)")
     plt.colorbar(im1, ax=ax1)
 
-    im2 = ax2.imshow(get_cell_rgb(
-        saved_cells[0], simulation_config["cell_colors"]), interpolation='nearest')
+    im2 = ax2.imshow(get_cell_rgb(saved_cells[0], simulation_config["cell_colors"]), interpolation='nearest')
     ax2.set_title("Cell States")
 
-    # Add legend for cell types
+    im3 = ax3.imshow(saved_a[0], cmap='viridis', interpolation='bilinear',
+                     vmin=saved_a.min(), vmax=saved_a.max())
+    ax3.set_title("Activator Concentration (a)")
+    plt.colorbar(im3, ax=ax3)
+
     from matplotlib.patches import Patch
     legend_elements = [
         Patch(facecolor='white', edgecolor='black', label='Empty'),
         Patch(facecolor=(0.4, 0.8, 1.0), label='Transitional'),
         Patch(facecolor=(0.5, 0.3, 0.1), label='Brown')
     ]
-    ax2.legend(handles=legend_elements, loc='upper right',
-               bbox_to_anchor=(1.0, 1.0))
+    ax2.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.0, 1.0))
 
-    # Animation update function
     def update(frame):
         im1.set_array(saved_i[frame])
-        im2.set_array(get_cell_rgb(
-            saved_cells[frame], simulation_config["cell_colors"]))
+        im2.set_array(get_cell_rgb(saved_cells[frame], simulation_config["cell_colors"]))
+        im3.set_array(saved_a[frame])
 
-        # Update titles with time information
-        ax1.set_title(
-            f"Inhibitor Concentration - Step: {int(saved_times[frame])}")
+        ax1.set_title(f"Inhibitor (i) - Step: {int(saved_times[frame])}")
         ax2.set_title(f"Cell States - Step: {int(saved_times[frame])}")
+        ax3.set_title(f"Activator (a) - Step: {int(saved_times[frame])}")
 
-        return [im1, im2]
+        return [im1, im2, im3]
 
     print("Starting animation...")
     ani = FuncAnimation(fig, update, frames=len(saved_times),
@@ -308,6 +305,7 @@ def show_animation(saved_a, saved_i, saved_cells, saved_times, save_dir, save_pl
 
     plt.show()
     return ani
+
 
 
 def plot_total_activator_over_time(saved_a, saved_times):
